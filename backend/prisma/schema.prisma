@@ -1,0 +1,146 @@
+// Prisma Schema para PostgreSQL
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Mensajes de contacto
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  budget    String?
+  message   String   @db.Text
+  status    String   @default("new") // new, read, replied
+  ipAddress String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_messages")
+}
+
+// Secciones del CV/Resume
+model ResumeSection {
+  id          String   @id @default(uuid())
+  sectionType String   // 'personal', 'summary', 'experience', 'education', 'skills', 'projects', 'certifications'
+  title       String
+  content     Json     // Contenido flexible en JSON
+  order       Int      @default(0)
+  isVisible   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("resume_sections")
+}
+
+// Información personal del CV
+model PersonalInfo {
+  id          String   @id @default(uuid())
+  fullName    String
+  title       String   // ej: "Full Stack Developer"
+  email       String
+  phone       String?
+  location    String?
+  website     String?
+  linkedin    String?
+  github      String?
+  summary     String?  @db.Text
+  profileImg  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("personal_info")
+}
+
+// Experiencia laboral
+model Experience {
+  id          String   @id @default(uuid())
+  position    String
+  company     String
+  location    String?
+  startDate   String   // "2020-01" formato
+  endDate     String?  // null si es trabajo actual
+  isCurrent   Boolean  @default(false)
+  description String   @db.Text
+  achievements String[] // Array de logros
+  technologies String[] // Array de tecnologías usadas
+  order       Int      @default(0)
+  isVisible   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("experiences")
+}
+
+// Educación
+model Education {
+  id          String   @id @default(uuid())
+  degree      String
+  institution String
+  location    String?
+  startDate   String
+  endDate     String?
+  isCurrent   Boolean  @default(false)
+  description String?  @db.Text
+  gpa         String?
+  order       Int      @default(0)
+  isVisible   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("education")
+}
+
+// Habilidades
+model Skill {
+  id         String   @id @default(uuid())
+  category   String   // 'Frontend', 'Backend', 'Tools', etc.
+  name       String
+  level      Int      // 1-100
+  order      Int      @default(0)
+  isVisible  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("skills")
+}
+
+// Proyectos
+model Project {
+  id           String   @id @default(uuid())
+  name         String
+  description  String   @db.Text
+  technologies String[] // Array de tecnologías
+  link         String?
+  github       String?
+  image        String?
+  highlights   String[] // Array de características destacadas
+  order        Int      @default(0)
+  isVisible    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("projects")
+}
+
+// Certificaciones
+model Certification {
+  id          String   @id @default(uuid())
+  name        String
+  issuer      String
+  issueDate   String
+  expiryDate  String?
+  credentialId String?
+  credentialUrl String?
+  order       Int      @default(0)
+  isVisible   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("certifications")
+}
