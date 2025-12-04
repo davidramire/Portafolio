@@ -26,6 +26,33 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Root endpoint - API information
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Portfolio API',
+    version: '1.0.0',
+    status: 'running',
+    description: 'Backend API para portafolio con Supabase PostgreSQL',
+    endpoints: {
+      health: 'GET /health',
+      contact: {
+        create: 'POST /api/contact',
+        list: 'GET /api/contact'
+      },
+      resume: {
+        full: 'GET /api/resume',
+        personal: 'GET /api/resume/personal',
+        experience: 'GET /api/resume/experience',
+        education: 'GET /api/resume/education',
+        skills: 'GET /api/resume/skills',
+        projects: 'GET /api/resume/projects',
+        certifications: 'GET /api/resume/certifications'
+      }
+    },
+    documentation: 'https://github.com/davidramire/Portafolio'
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
