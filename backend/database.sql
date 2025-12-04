@@ -1,415 +1,401 @@
--- ============================================
--- SQL COMPLETO PARA POSTGRESQL - PORTFOLIO
--- ============================================
+--
+-- PostgreSQL database dump
+--
 
--- Crear la base de datos (si no existe)
--- CREATE DATABASE portfolio;
+\restrict WQcJZVtu4aqEXY6XwPIAIkr3yxbvjI6S4soNCAzrWaZ3KRtowtvNWTyzC8WnilD
 
--- Conectarse a la base de datos portfolio antes de ejecutar lo siguiente
+-- Dumped from database version 17.6
+-- Dumped by pg_dump version 17.6
 
--- ============================================
--- TABLA: ContactMessage
--- Almacena los mensajes del formulario de contacto
--- ============================================
-CREATE TABLE IF NOT EXISTS "ContactMessage" (
-    "id" SERIAL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "subject" TEXT NOT NULL,
-    "budget" TEXT,
-    "message" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'new',
-    "ip" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+-- Started on 2025-12-03 19:50:21
 
--- Índice para búsquedas por email
-CREATE INDEX IF NOT EXISTS "ContactMessage_email_idx" ON "ContactMessage"("email");
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
--- Índice para filtrar por estado
-CREATE INDEX IF NOT EXISTS "ContactMessage_status_idx" ON "ContactMessage"("status");
+--
+-- TOC entry 225 (class 1255 OID 41232)
+-- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: postgres
+--
 
--- ============================================
--- TABLA: PersonalInfo
--- Información personal del CV/Resume
--- ============================================
-CREATE TABLE IF NOT EXISTS "PersonalInfo" (
-    "id" SERIAL PRIMARY KEY,
-    "fullName" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "phone" TEXT,
-    "location" TEXT,
-    "website" TEXT,
-    "linkedin" TEXT,
-    "github" TEXT,
-    "summary" TEXT,
-    "avatar" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- ============================================
--- TABLA: Experience
--- Experiencia laboral
--- ============================================
-CREATE TABLE IF NOT EXISTS "Experience" (
-    "id" SERIAL PRIMARY KEY,
-    "position" TEXT NOT NULL,
-    "company" TEXT NOT NULL,
-    "location" TEXT,
-    "startDate" TIMESTAMP(3) NOT NULL,
-    "endDate" TIMESTAMP(3),
-    "current" BOOLEAN NOT NULL DEFAULT false,
-    "description" TEXT,
-    "achievements" TEXT[],
-    "technologies" TEXT[],
-    "order" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Índice para ordenar experiencias
-CREATE INDEX IF NOT EXISTS "Experience_order_idx" ON "Experience"("order");
-
--- ============================================
--- TABLA: Education
--- Educación y formación académica
--- ============================================
-CREATE TABLE IF NOT EXISTS "Education" (
-    "id" SERIAL PRIMARY KEY,
-    "degree" TEXT NOT NULL,
-    "institution" TEXT NOT NULL,
-    "location" TEXT,
-    "startDate" TIMESTAMP(3) NOT NULL,
-    "endDate" TIMESTAMP(3),
-    "current" BOOLEAN NOT NULL DEFAULT false,
-    "description" TEXT,
-    "gpa" TEXT,
-    "order" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Índice para ordenar educación
-CREATE INDEX IF NOT EXISTS "Education_order_idx" ON "Education"("order");
-
--- ============================================
--- TABLA: Skill
--- Habilidades técnicas y soft skills
--- ============================================
-CREATE TABLE IF NOT EXISTS "Skill" (
-    "id" SERIAL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
-    "level" INTEGER NOT NULL DEFAULT 50,
-    "order" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Índice para filtrar por categoría
-CREATE INDEX IF NOT EXISTS "Skill_category_idx" ON "Skill"("category");
-
--- Índice para ordenar skills
-CREATE INDEX IF NOT EXISTS "Skill_order_idx" ON "Skill"("order");
-
--- ============================================
--- TABLA: Project
--- Proyectos destacados del portafolio
--- ============================================
-CREATE TABLE IF NOT EXISTS "Project" (
-    "id" SERIAL PRIMARY KEY,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "category" TEXT,
-    "technologies" TEXT[],
-    "highlights" TEXT[],
-    "imageUrl" TEXT,
-    "demoUrl" TEXT,
-    "repoUrl" TEXT,
-    "startDate" TIMESTAMP(3),
-    "endDate" TIMESTAMP(3),
-    "featured" BOOLEAN NOT NULL DEFAULT false,
-    "order" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Índice para proyectos destacados
-CREATE INDEX IF NOT EXISTS "Project_featured_idx" ON "Project"("featured");
-
--- Índice para ordenar proyectos
-CREATE INDEX IF NOT EXISTS "Project_order_idx" ON "Project"("order");
-
--- ============================================
--- TABLA: Certification
--- Certificaciones y cursos completados
--- ============================================
-CREATE TABLE IF NOT EXISTS "Certification" (
-    "id" SERIAL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "issuer" TEXT NOT NULL,
-    "issueDate" TIMESTAMP(3) NOT NULL,
-    "expiryDate" TIMESTAMP(3),
-    "credentialId" TEXT,
-    "credentialUrl" TEXT,
-    "description" TEXT,
-    "order" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Índice para ordenar certificaciones
-CREATE INDEX IF NOT EXISTS "Certification_order_idx" ON "Certification"("order");
-
--- ============================================
--- TABLA: ResumeSection
--- Secciones personalizadas adicionales del CV
--- ============================================
-CREATE TABLE IF NOT EXISTS "ResumeSection" (
-    "id" SERIAL PRIMARY KEY,
-    "title" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
-    "type" TEXT NOT NULL DEFAULT 'text',
-    "order" INTEGER NOT NULL DEFAULT 0,
-    "visible" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Índice para ordenar secciones
-CREATE INDEX IF NOT EXISTS "ResumeSection_order_idx" ON "ResumeSection"("order");
-
--- Índice para filtrar secciones visibles
-CREATE INDEX IF NOT EXISTS "ResumeSection_visible_idx" ON "ResumeSection"("visible");
-
--- ============================================
--- DATOS DE EJEMPLO (OPCIONAL)
--- ============================================
-
--- Insertar información personal de ejemplo
-INSERT INTO "PersonalInfo" (
-    "fullName", 
-    "title", 
-    "email", 
-    "phone", 
-    "location", 
-    "linkedin", 
-    "github",
-    "summary"
-) VALUES (
-    'David Ramirez',
-    'Full Stack Developer',
-    'davidramirezv.0816@gmail.com',
-    '+57 300 123 4567',
-    'Colombia',
-    'https://www.linkedin.com/in/david-ramirez-81b81a260/',
-    'https://github.com/davidramire',
-    'Desarrollador Full Stack apasionado por crear soluciones web innovadoras y escalables. Especializado en React, Node.js y tecnologías modernas.'
-)
-ON CONFLICT DO NOTHING;
-
--- Insertar experiencia de ejemplo
-INSERT INTO "Experience" (
-    "position",
-    "company",
-    "location",
-    "startDate",
-    "endDate",
-    "current",
-    "description",
-    "achievements",
-    "technologies",
-    "order"
-) VALUES 
-(
-    'Full Stack Developer',
-    'Tech Solutions Inc.',
-    'Remote',
-    '2023-01-01',
-    NULL,
-    true,
-    'Desarrollo de aplicaciones web full stack utilizando tecnologías modernas',
-    ARRAY['Implementé arquitectura de microservicios que mejoró la escalabilidad en 300%', 'Reduje el tiempo de carga de la aplicación en un 60%', 'Lideré un equipo de 5 desarrolladores'],
-    ARRAY['React', 'Node.js', 'PostgreSQL', 'Docker', 'AWS'],
-    1
-),
-(
-    'Frontend Developer',
-    'Digital Agency',
-    'Bogotá, Colombia',
-    '2021-06-01',
-    '2022-12-31',
-    false,
-    'Desarrollo de interfaces de usuario modernas y responsivas',
-    ARRAY['Desarrollé 15+ landing pages con conversión promedio de 8%', 'Implementé sistema de diseño reutilizable', 'Mejoré el performance web en un 50%'],
-    ARRAY['React', 'TypeScript', 'Tailwind CSS', 'Figma'],
-    2
-)
-ON CONFLICT DO NOTHING;
-
--- Insertar educación de ejemplo
-INSERT INTO "Education" (
-    "degree",
-    "institution",
-    "location",
-    "startDate",
-    "endDate",
-    "current",
-    "description",
-    "order"
-) VALUES 
-(
-    'Ingeniería de Sistemas',
-    'Universidad Nacional de Colombia',
-    'Bogotá, Colombia',
-    '2018-01-01',
-    '2023-06-01',
-    false,
-    'Énfasis en desarrollo de software y arquitectura de sistemas',
-    1
-)
-ON CONFLICT DO NOTHING;
-
--- Insertar habilidades de ejemplo
-INSERT INTO "Skill" ("name", "category", "level", "order") VALUES 
--- Frontend
-('React', 'Frontend', 90, 1),
-('JavaScript/TypeScript', 'Frontend', 85, 2),
-('HTML/CSS', 'Frontend', 90, 3),
-('Tailwind CSS', 'Frontend', 85, 4),
-('Vue.js', 'Frontend', 70, 5),
-
--- Backend
-('Node.js', 'Backend', 85, 6),
-('Express.js', 'Backend', 85, 7),
-('PostgreSQL', 'Backend', 80, 8),
-('MongoDB', 'Backend', 75, 9),
-('REST APIs', 'Backend', 90, 10),
-('GraphQL', 'Backend', 70, 11),
-
--- DevOps
-('Git', 'DevOps', 85, 12),
-('Docker', 'DevOps', 75, 13),
-('AWS', 'DevOps', 70, 14),
-('CI/CD', 'DevOps', 75, 15),
-
--- Design
-('Figma', 'Design', 80, 16),
-('UI/UX Design', 'Design', 75, 17),
-('Responsive Design', 'Design', 90, 18)
-ON CONFLICT DO NOTHING;
-
--- Insertar proyectos de ejemplo
-INSERT INTO "Project" (
-    "title",
-    "description",
-    "category",
-    "technologies",
-    "highlights",
-    "demoUrl",
-    "repoUrl",
-    "featured",
-    "order"
-) VALUES 
-(
-    'E-Commerce Platform',
-    'Plataforma de comercio electrónico completa con pasarela de pagos, gestión de inventario y panel de administración.',
-    'Web Development',
-    ARRAY['React', 'Node.js', 'MongoDB', 'Stripe'],
-    ARRAY['Sistema de pagos integrado con Stripe', 'Panel de administración en tiempo real', 'Optimizado para SEO'],
-    'https://demo.example.com',
-    'https://github.com/davidramire/ecommerce',
-    true,
-    1
-),
-(
-    'Fitness Tracker App',
-    'Aplicación móvil para seguimiento de ejercicios y nutrición con sincronización en tiempo real.',
-    'Mobile App',
-    ARRAY['React Native', 'Firebase', 'Redux'],
-    ARRAY['Sincronización offline-first', 'Integración con wearables', 'Dashboard de análisis'],
-    'https://app.example.com',
-    'https://github.com/davidramire/fitness-tracker',
-    true,
-    2
-)
-ON CONFLICT DO NOTHING;
-
--- Insertar certificaciones de ejemplo
-INSERT INTO "Certification" (
-    "name",
-    "issuer",
-    "issueDate",
-    "credentialId",
-    "credentialUrl",
-    "order"
-) VALUES 
-(
-    'AWS Certified Solutions Architect',
-    'Amazon Web Services',
-    '2024-03-15',
-    'AWS-12345678',
-    'https://aws.amazon.com/verification',
-    1
-),
-(
-    'React Advanced Certification',
-    'Meta',
-    '2023-09-20',
-    'META-87654321',
-    'https://coursera.org/verify',
-    2
-)
-ON CONFLICT DO NOTHING;
-
--- ============================================
--- FUNCIONES ÚTILES
--- ============================================
-
--- Función para actualizar automáticamente updatedAt
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+CREATE FUNCTION public.update_updated_at_column() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
 BEGIN
     NEW."updatedAt" = CURRENT_TIMESTAMP;
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
--- Triggers para actualizar updatedAt en todas las tablas
-CREATE TRIGGER update_contact_message_updated_at BEFORE UPDATE ON "ContactMessage" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_personal_info_updated_at BEFORE UPDATE ON "PersonalInfo" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_experience_updated_at BEFORE UPDATE ON "Experience" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_education_updated_at BEFORE UPDATE ON "Education" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_skill_updated_at BEFORE UPDATE ON "Skill" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_project_updated_at BEFORE UPDATE ON "Project" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_certification_updated_at BEFORE UPDATE ON "Certification" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_resume_section_updated_at BEFORE UPDATE ON "ResumeSection" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ============================================
--- CONSULTAS ÚTILES PARA VERIFICAR
--- ============================================
+ALTER FUNCTION public.update_updated_at_column() OWNER TO postgres;
 
--- Ver todos los mensajes de contacto
--- SELECT * FROM "ContactMessage" ORDER BY "createdAt" DESC;
+SET default_tablespace = '';
 
--- Ver información personal
--- SELECT * FROM "PersonalInfo";
+SET default_table_access_method = heap;
 
--- Ver todas las experiencias ordenadas
--- SELECT * FROM "Experience" ORDER BY "order", "startDate" DESC;
+--
+-- TOC entry 224 (class 1259 OID 41110)
+-- Name: certifications; Type: TABLE; Schema: public; Owner: postgres
+--
 
--- Ver habilidades por categoría
--- SELECT "category", COUNT(*) as total, AVG("level") as nivel_promedio 
--- FROM "Skill" 
--- GROUP BY "category";
+CREATE TABLE public.certifications (
+    id text NOT NULL,
+    name text NOT NULL,
+    issuer text NOT NULL,
+    "issueDate" text NOT NULL,
+    "expiryDate" text,
+    "credentialId" text,
+    "credentialUrl" text,
+    "order" integer DEFAULT 0 NOT NULL,
+    "isVisible" boolean DEFAULT true NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
 
--- Ver proyectos destacados
--- SELECT * FROM "Project" WHERE "featured" = true ORDER BY "order";
 
--- Ver certificaciones activas (no expiradas)
--- SELECT * FROM "Certification" 
--- WHERE "expiryDate" IS NULL OR "expiryDate" > CURRENT_TIMESTAMP
--- ORDER BY "issueDate" DESC;
+ALTER TABLE public.certifications OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 41041)
+-- Name: contact_messages; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.contact_messages (
+    id text NOT NULL,
+    name text NOT NULL,
+    email text NOT NULL,
+    subject text NOT NULL,
+    budget text,
+    message text NOT NULL,
+    status text DEFAULT 'new'::text NOT NULL,
+    "ipAddress" text,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.contact_messages OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 41079)
+-- Name: education; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.education (
+    id text NOT NULL,
+    degree text NOT NULL,
+    institution text NOT NULL,
+    location text,
+    "startDate" text NOT NULL,
+    "endDate" text,
+    "isCurrent" boolean DEFAULT false NOT NULL,
+    description text,
+    gpa text,
+    "order" integer DEFAULT 0 NOT NULL,
+    "isVisible" boolean DEFAULT true NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.education OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 41068)
+-- Name: experiences; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.experiences (
+    id text NOT NULL,
+    "position" text NOT NULL,
+    company text NOT NULL,
+    location text,
+    "startDate" text NOT NULL,
+    "endDate" text,
+    "isCurrent" boolean DEFAULT false NOT NULL,
+    description text NOT NULL,
+    achievements text[],
+    technologies text[],
+    "order" integer DEFAULT 0 NOT NULL,
+    "isVisible" boolean DEFAULT true NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.experiences OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 41060)
+-- Name: personal_info; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.personal_info (
+    id text NOT NULL,
+    "fullName" text NOT NULL,
+    title text NOT NULL,
+    email text NOT NULL,
+    phone text,
+    location text,
+    website text,
+    linkedin text,
+    github text,
+    summary text,
+    "profileImg" text,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.personal_info OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 41100)
+-- Name: projects; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.projects (
+    id text NOT NULL,
+    name text NOT NULL,
+    description text NOT NULL,
+    technologies text[],
+    link text,
+    github text,
+    image text,
+    highlights text[],
+    "order" integer DEFAULT 0 NOT NULL,
+    "isVisible" boolean DEFAULT true NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.projects OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 41050)
+-- Name: resume_sections; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.resume_sections (
+    id text NOT NULL,
+    "sectionType" text NOT NULL,
+    title text NOT NULL,
+    content jsonb NOT NULL,
+    "order" integer DEFAULT 0 NOT NULL,
+    "isVisible" boolean DEFAULT true NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.resume_sections OWNER TO postgres;
+
+--
+-- TOC entry 222 (class 1259 OID 41090)
+-- Name: skills; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.skills (
+    id text NOT NULL,
+    category text NOT NULL,
+    name text NOT NULL,
+    level integer NOT NULL,
+    "order" integer DEFAULT 0 NOT NULL,
+    "isVisible" boolean DEFAULT true NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.skills OWNER TO postgres;
+
+--
+-- TOC entry 4961 (class 0 OID 41110)
+-- Dependencies: 224
+-- Data for Name: certifications; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.certifications (id, name, issuer, "issueDate", "expiryDate", "credentialId", "credentialUrl", "order", "isVisible", "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4954 (class 0 OID 41041)
+-- Dependencies: 217
+-- Data for Name: contact_messages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.contact_messages (id, name, email, subject, budget, message, status, "ipAddress", "createdAt", "updatedAt") FROM stdin;
+ee69ebce-237c-4d56-8ce6-d1f9a22979a5	David	david@gmail.com	sssss	\N	sssss	new	::1	2025-12-03 22:15:25.276	2025-12-03 22:15:25.276
+735c012c-b825-4d27-b95b-3adccc8d2b67	Juan Agudelo	david@gmail.com	dd	\N	ddd	new	::1	2025-12-03 22:16:51.161	2025-12-03 22:16:51.161
+fe211748-2b10-4eb1-a7f8-cddae5216a12	Juan Agudelo	david@gmail.com	eee	\N	eee	new	::1	2025-12-03 22:17:15.338	2025-12-03 22:17:15.338
+899b8720-9ce2-4d89-8a0d-3b67910859ed	David	david@gmail.com	ww	\N	ww	new	::1	2025-12-03 22:19:38.171	2025-12-03 22:19:38.171
+c1bc901c-c6a5-4a50-8ef4-c045bad53d55	Juan Agudelo	david@gmail.com	ss	\N	ddd	new	::1	2025-12-03 22:22:00.912	2025-12-03 22:22:00.912
+4acf0903-2c81-41e2-8f05-5ca1ad58688c	Juan Agudelo	david@gmail.com	ss	\N	a	new	::1	2025-12-03 22:22:27.677	2025-12-03 22:22:27.677
+5521a10c-74fb-4aba-a748-c5f4abf4d4d2	Juan Agudelo	david@gmail.com	sss	\N	sss	new	::1	2025-12-03 22:30:40.001	2025-12-03 22:30:40.001
+ac9d14fb-ba6d-4dba-9d4d-3af474d915b0	david	david@gmail.com	ddd	\N	ddd	new	::1	2025-12-03 22:32:51.932	2025-12-03 22:32:51.932
+d93a1e9f-22f5-4082-a6b5-7d60bfb1cea7	Juan Agudelo	david@gmail.com	dd	\N	dd	new	::1	2025-12-03 22:33:08.77	2025-12-03 22:33:08.77
+5f8c70a0-e8a6-498a-8d12-ec8a75d021c3	Juan Agudelo	david@gmail.com	ss	\N	aaaa	new	::1	2025-12-03 22:34:21.871	2025-12-03 22:34:21.871
+8c9f7c47-75a0-44db-9d7a-d3d7b59d5e59	David	david@gmail.com	dd	\N	dd	new	::1	2025-12-03 22:40:43.628	2025-12-03 22:40:43.628
+e4fd1454-9af0-41b2-b25d-0b8d050592a4	David	david@gmail.com	ee	\N	ee	new	::1	2025-12-03 22:42:13.379	2025-12-03 22:42:13.379
+fe61f73e-209a-4260-b54a-58404b4d8033	Juan Agudelo	david@gmail.com	x	\N	xx	new	::1	2025-12-03 22:43:52.762	2025-12-03 22:43:52.762
+403440c4-e71f-4a53-aba4-42b0e37471d3	Juan Agudelo	david@gmail.com	dd	\N	dd	new	::1	2025-12-03 22:45:29.201	2025-12-03 22:45:29.201
+a064d1a8-0bb9-42e2-a6f9-e1d63ca6ae52	David Esteban	david@gmail.com	qq	\N	qq	new	::1	2025-12-03 22:51:27.62	2025-12-03 22:51:27.62
+795969b6-99c0-4cd4-9063-37b771f56e13	Juan Agudelo	david@gmail.com	qq	\N	aa	new	::1	2025-12-03 22:52:48.446	2025-12-03 22:52:48.446
+28243b3f-d029-453d-b942-1a37d2a92205	Script Test	script@test.local	Inserción directa	0	Creado por script de prueba para verificar persistencia	new	127.0.0.1	2025-12-03 23:01:41.667	2025-12-03 23:01:41.667
+23775296-5f2b-4b1d-b72d-b53bccb1329f	dd	david@gmail.com	dd	\N	dddd	new	::1	2025-12-03 23:04:52.883	2025-12-03 23:04:52.883
+92558304-eca5-4abf-bb9d-d8f94bf353ca	Laura	la@gmail.com	edd	\N	ddd	new	::1	2025-12-03 23:06:00.154	2025-12-03 23:06:00.154
+bb1a1b28-6776-48ae-abac-46fa50011537	Carmen	carmen@gmail.com	ggggg	\N	gggggggg	new	::1	2025-12-03 23:15:42.84	2025-12-03 23:15:42.84
+\.
+
+
+--
+-- TOC entry 4958 (class 0 OID 41079)
+-- Dependencies: 221
+-- Data for Name: education; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.education (id, degree, institution, location, "startDate", "endDate", "isCurrent", description, gpa, "order", "isVisible", "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4957 (class 0 OID 41068)
+-- Dependencies: 220
+-- Data for Name: experiences; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.experiences (id, "position", company, location, "startDate", "endDate", "isCurrent", description, achievements, technologies, "order", "isVisible", "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4956 (class 0 OID 41060)
+-- Dependencies: 219
+-- Data for Name: personal_info; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.personal_info (id, "fullName", title, email, phone, location, website, linkedin, github, summary, "profileImg", "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4960 (class 0 OID 41100)
+-- Dependencies: 223
+-- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.projects (id, name, description, technologies, link, github, image, highlights, "order", "isVisible", "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4955 (class 0 OID 41050)
+-- Dependencies: 218
+-- Data for Name: resume_sections; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.resume_sections (id, "sectionType", title, content, "order", "isVisible", "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4959 (class 0 OID 41090)
+-- Dependencies: 222
+-- Data for Name: skills; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.skills (id, category, name, level, "order", "isVisible", "createdAt", "updatedAt") FROM stdin;
+\.
+
+
+--
+-- TOC entry 4808 (class 2606 OID 41119)
+-- Name: certifications certifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.certifications
+    ADD CONSTRAINT certifications_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4794 (class 2606 OID 41049)
+-- Name: contact_messages contact_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.contact_messages
+    ADD CONSTRAINT contact_messages_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4802 (class 2606 OID 41089)
+-- Name: education education_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.education
+    ADD CONSTRAINT education_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4800 (class 2606 OID 41078)
+-- Name: experiences experiences_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.experiences
+    ADD CONSTRAINT experiences_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4798 (class 2606 OID 41067)
+-- Name: personal_info personal_info_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.personal_info
+    ADD CONSTRAINT personal_info_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4806 (class 2606 OID 41109)
+-- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.projects
+    ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4796 (class 2606 OID 41059)
+-- Name: resume_sections resume_sections_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.resume_sections
+    ADD CONSTRAINT resume_sections_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4804 (class 2606 OID 41099)
+-- Name: skills skills_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.skills
+    ADD CONSTRAINT skills_pkey PRIMARY KEY (id);
+
+
+-- Completed on 2025-12-03 19:50:21
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict WQcJZVtu4aqEXY6XwPIAIkr3yxbvjI6S4soNCAzrWaZ3KRtowtvNWTyzC8WnilD
+
